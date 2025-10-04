@@ -1,8 +1,9 @@
-Keystatic Fork — jaskipper
-Purpose
+# Keystatic Fork — jaskipper
+
+**Purpose**
 - Keep a small, well‑documented delta on top of upstream Keystatic so we can ship features we need (e.g., defaultSort for collection tables) without waiting on upstream merges.
 
-Current Customizations
+**Current Customizations**
 - Feature: Collection `defaultSort` option used by Admin UI list view.
   - Type: `defaultSort?: { column: 'slug' | 'status' | <field>, direction?: 'ascending' | 'descending' }`
   - UI: the collection table initializes sorting from this value.
@@ -10,7 +11,7 @@ Current Customizations
     - packages/keystatic/src/config.tsx
     - packages/keystatic/src/app/CollectionPage.tsx
 
-How Consumers Use This Fork
+**How Consumers Use This Fork**
 - Local development on your machine (fastest):
   - `pnpm add @keystatic/core@link:/absolute/path/to/keystatic/packages/keystatic`
 - Team consumption without cloning (recommended): publish a tarball and reference its URL
@@ -59,8 +60,28 @@ Syncing With Upstream
    - `git push --force-with-lease`
 
 Release Guidance
-- Prefer pinning consumers to commit SHAs.
-- If you want tags, create annotated tags on this repo (e.g., `fiveq-v0.5.48+fiveq.1`).
+- Prefer distributing via GitHub Release tarball so consumers don’t need to clone and package.
+- Create annotated tags on this repo (e.g., `jsk-2025.01.05-1` or `jsk-v0.5.48.1`). Pushing a tag matching `jsk-*` will trigger the release workflow.
+
+Release Checklist
+1) Ensure `jaskipper/main` is up to date and passes a local build:
+   - `./scripts/sync-upstream.sh jaskipper/main`
+   - Fix conflicts if any, `git rebase --continue`, `pnpm -w build`
+2) Tag the commit:
+   - `git tag -a jsk-YYYY.MM.DD-N -m "Release jsk-YYYY.MM.DD-N"`
+   - `git push origin jsk-YYYY.MM.DD-N`
+3) GitHub Actions will:
+   - install + build
+   - run `pnpm -F @keystatic/core pack` to produce a tarball
+   - create a GitHub Release for the tag and attach the tarball
+4) Consumers can install from the tarball URL:
+   ```json
+   {
+     "dependencies": {
+       "@keystatic/core": "https://github.com/jaskipper/keystatic/releases/download/jsk-YYYY.MM.DD-N/<tarball>.tgz"
+     }
+   }
+   ```
 
 Coding Guidelines For Delta
 - Keep changes minimal and config‑driven.

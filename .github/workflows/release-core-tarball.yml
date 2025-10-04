@@ -1,0 +1,47 @@
+name: Release core tarball
+
+on:
+  push:
+    tags:
+      - 'jsk-*'
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install deps
+        run: pnpm -w install --frozen-lockfile
+
+      - name: Build workspace
+        run: pnpm -w build
+
+      - name: Pack @keystatic/core
+        run: pnpm -F @keystatic/core pack --pack-destination ./dist-packs
+
+      - name: Create GitHub Release and upload tarball
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist-packs/*.tgz
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
