@@ -1,4 +1,4 @@
-Keystatic Fork — FiveQ
+Keystatic Fork — jaskipper
 Purpose
 - Keep a small, well‑documented delta on top of upstream Keystatic so we can ship features we need (e.g., defaultSort for collection tables) without waiting on upstream merges.
 
@@ -11,31 +11,46 @@ Current Customizations
     - packages/keystatic/src/app/CollectionPage.tsx
 
 How Consumers Use This Fork
-- Local development (fastest):
+- Local development on your machine (fastest):
   - `pnpm add @keystatic/core@link:/absolute/path/to/keystatic/packages/keystatic`
-- Pin to a Git commit (CI/prod friendly):
-  - `"@keystatic/core": "github:<your-gh-username>/keystatic#<commit-sha>"`
-  - Optional: force this across the app with pnpm overrides:
-    ```json
-    {
-      "overrides": {
-        "@keystatic/core": "github:<you>/keystatic#<sha>"
-      }
+- Team consumption without cloning (recommended): publish a tarball and reference its URL
+  1. Build and pack:
+     - `pnpm -w build`
+     - `pnpm -F @keystatic/core pack --pack-destination ./dist-packs`
+  2. Upload the generated tarball from `dist-packs/` to a GitHub Release on this repo.
+  3. In consumer projects, depend on the tarball URL (works with npm/pnpm/yarn):
+     ```json
+     {
+       "dependencies": {
+         "@keystatic/core": "https://github.com/jaskipper/keystatic/releases/download/<tag>/<tarball>.tgz"
+       }
+     }
+     ```
+  - Optional: add a pnpm `overrides` entry to force transitive deps to the forked tarball.
+- Alternative (requires publishing): publish `@jaskipper/keystatic-core` to npm and alias it:
+  ```json
+  {
+    "dependencies": {
+      "@keystatic/core": "npm:@jaskipper/keystatic-core@0.5.48-jsk.1"
+    },
+    "overrides": {
+      "@keystatic/core": "npm:@jaskipper/keystatic-core@0.5.48-jsk.1"
     }
-    ```
-- Note: The package has a `prepare` script so Git installs automatically build dist.
+  }
+  ```
+  Use this only if you’re comfortable publishing your fork to a registry.
 
 Branching Model
-- `upstream/main`: mirror of Thinkmill/keystatic main (no edits).
-- `feat/*` branches: develop features.
-- `fiveq/main` (or your primary branch in use): rebased regularly onto `upstream/main`.
+- `upstream/main`: mirror of Thinkmill/keystatic `main` (no edits).
+- `feat/*` branches: develop features (e.g., `feat/default-sort`).
+- `jaskipper/main`: your stable integration branch (merge feature branches here). Rebase onto `upstream/main` regularly.
 
 Syncing With Upstream
 1) Ensure upstream remote exists:
    - `git remote add upstream https://github.com/Thinkmill/keystatic.git`
 2) Update and rebase:
    - `git fetch upstream`
-   - `git checkout fiveq/main` (or your active branch)
+   - `git checkout jaskipper/main` (or your active branch)
    - `git rebase upstream/main`
 3) Build and verify:
    - `pnpm -w i`
@@ -59,4 +74,3 @@ Contributing Upstream
 Troubleshooting
 - Git install fails to load built files: ensure `prepare` ran. Run `pnpm -w build` in this repo and re‑install.
 - Admin list doesn’t reflect default sort: confirm your collection sets `defaultSort` and that the `column` is either `'slug'|'status'` or present in `columns`.
-
