@@ -17,6 +17,13 @@ export type Format =
     };
 export type EntryLayout = 'content' | 'form';
 export type Glob = '*' | '**';
+
+export type SortDirection = 'ascending' | 'descending';
+export type DefaultSort<Schema extends Record<string, ComponentSchema>> = {
+  column: (keyof Schema & string) | 'slug' | 'status';
+  direction?: SortDirection;
+};
+
 export type Collection<
   Schema extends Record<string, ComponentSchema>,
   SlugField extends string,
@@ -27,6 +34,7 @@ export type Collection<
   format?: Format;
   previewUrl?: string;
   columns?: string[];
+  defaultSort?: DefaultSort<Schema>;
   template?: string;
   parseSlugForSort?: (slug: string) => string | number;
   slugField: SlugField;
