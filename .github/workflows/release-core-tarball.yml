@@ -26,18 +26,14 @@ jobs:
           node-version: '20'
           cache: 'pnpm'
 
-      - name: Install deps (ignore scripts)
+      - name: Install workspace deps (ignore scripts)
         run: pnpm -w install --frozen-lockfile --ignore-scripts
 
-      - name: Prepare workspace (replicate postinstall steps)
+      - name: Prepare @keystatic/core only
         run: |
-          pnpm -w exec preconstruct dev
-          pnpm -w exec manypkg check
-          pnpm exec tsx design-system/pkg/build-l10n.mts
+          pnpm -C packages/keystatic install --frozen-lockfile --ignore-scripts
           pnpm -C packages/keystatic run setup
-
-      - name: Build workspace
-        run: pnpm -w build
+          pnpm -w exec preconstruct build
 
       - name: Pack @keystatic/core
         run: pnpm -F @keystatic/core pack --pack-destination ./dist-packs
