@@ -48,6 +48,33 @@ jobs:
           mkdir -p dist-packs
           pnpm -C packages/keystatic pack --pack-destination ../../dist-packs
 
+      - name: Verify packed package.json integrity
+        run: |
+          set -euo pipefail
+          TARBALL=$(ls dist-packs/*.tgz | head -n1)
+          mkdir -p dist-unpack
+          tar -xzf "$TARBALL" -C dist-unpack
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'dist-unpack/package/package.json';
+          const pkg = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const bad = [];
+          for (const k of ['dependencies','devDependencies','peerDependencies','optionalDependencies']) {
+            const obj = pkg[k] || {};
+            for (const [name, ver] of Object.entries(obj)) {
+              if (typeof ver === 'string' && ver.startsWith('workspace:')) {
+                bad.push(`${k}:${name}=${ver}`);
+              }
+            }
+          }
+          if (bad.length) {
+            console.error('\nFound workspace: ranges in packed package.json:');
+            console.error(bad.join('\n'));
+            process.exit(1);
+          }
+          console.log('OK: No workspace: ranges in packed package.json');
+          NODE
+
       - name: Create GitHub Release and upload tarball
         uses: softprops/action-gh-release@v2
         with:

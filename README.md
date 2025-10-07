@@ -26,6 +26,22 @@ Built with DNA from Keystone, connects directly to GitHub and doesn’t mess wit
 your source code. Conceived for modern front-end frameworks like Next.js, Remix
 and Astro, designed to fit into your workflow.
 
+---
+
+## Fork Overview
+
+This repository is a maintained fork of Thinkmill's Keystatic, owned by jaskipper. It keeps a small, well‑documented delta with a few features we need ahead of upstream (e.g., collection `defaultSort`, custom admin pages inside Keystatic). For details on the fork’s scope, release process, and how to consume the fork, see `MAINTAINING_FORK.md`.
+
+Install the fork as a drop‑in replacement via a GitHub Release tarball:
+
+```
+pnpm add @keystatic/core@https://github.com/jaskipper/keystatic/releases/download/<tag>/keystatic-core-<version>.tgz
+```
+
+We suffix versions for clarity (e.g., `0.5.48-jsk.1`). The API surface remains compatible with upstream unless otherwise noted in the maintenance notes.
+
+---
+
 ## Status
 
 We're working on it! Things are experimental at the moment.

@@ -39,6 +39,7 @@
   1. Build and pack:
      - `pnpm -w build:packages`
      - `pnpm -C packages/keystatic pack --pack-destination ../../dist-packs`
+     - Note: the tarball name is based on the package version. We suffix fork builds (e.g., `0.5.48-jsk.1`) so the artifact looks like `keystatic-core-0.5.48-jsk.1.tgz`.
   2. Upload the generated tarball from `dist-packs/` to a GitHub Release on this repo.
   3. In consumer projects, depend on the tarball URL (works with npm/pnpm/yarn):
      ```json
@@ -93,7 +94,7 @@ Release Checklist
    - `git push origin jsk-YYYY.MM.DD-N`
 3) GitHub Actions will:
    - install + build
-   - run `pnpm -F @keystatic/core pack` to produce a tarball
+   - run `pnpm -C packages/keystatic pack --pack-destination ../../dist-packs` to produce a tarball
    - create a GitHub Release for the tag and attach the tarball
 4) Consumers can install from the tarball URL:
    ```json
