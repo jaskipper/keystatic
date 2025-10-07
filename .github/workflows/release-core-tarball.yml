@@ -29,8 +29,14 @@ jobs:
       - name: Install workspace deps (ignore scripts)
         run: pnpm -w install --frozen-lockfile --ignore-scripts
 
+      - name: Install @keystatic/core deps (ignore scripts)
+        run: pnpm -C packages/keystatic install --frozen-lockfile --ignore-scripts
+
+      - name: Setup @keystatic/core (generate artifacts)
+        run: pnpm -C packages/keystatic run setup
+
       - name: Build packages (preconstruct)
-        run: pnpm -w run build:packages
+        run: pnpm -w exec preconstruct build
 
       - name: Pack @keystatic/core
         run: pnpm -F @keystatic/core pack --pack-destination ./dist-packs
