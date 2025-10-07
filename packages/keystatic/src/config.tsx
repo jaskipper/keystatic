@@ -24,6 +24,23 @@ export type DefaultSort<Schema extends Record<string, ComponentSchema>> = {
   direction?: SortDirection;
 };
 
+type CustomPageRenderArgs<Collections, Singletons, Pages> = {
+  basePath: string;
+  config: Config<Collections, Singletons, Pages>;
+};
+
+export type CustomPage<Collections, Singletons, Pages> = {
+  label: string;
+  icon?: ReactElement;
+  description?: string;
+  render: (args: CustomPageRenderArgs<Collections, Singletons, Pages>) => ReactElement;
+};
+
+type CustomPageMap<Collections, Singletons, Pages> = Record<
+  string,
+  CustomPage<Collections, Singletons, Pages>
+>;
+
 export type Collection<
   Schema extends Record<string, ComponentSchema>,
   SlugField extends string,
@@ -50,10 +67,10 @@ export type Singleton<Schema extends Record<string, ComponentSchema>> = {
   schema: Schema;
 };
 
-type CommonConfig<Collections, Singletons> = {
+type CommonConfig<Collections, Singletons, Pages> = {
   locale?: Locale;
   cloud?: { project: string };
-  ui?: UserInterface<Collections, Singletons>;
+  ui?: UserInterface<Collections, Singletons, Pages>;
 };
 
 type CommonRemoteStorageConfig = {
@@ -68,7 +85,7 @@ type BrandMark = (props: {
   colorScheme: Exclude<ColorScheme, 'auto'>; // we resolve "auto" to "light" or "dark" on the client
 }) => ReactElement;
 export const NAVIGATION_DIVIDER_KEY = '---';
-type UserInterface<Collections, Singletons> = {
+type UserInterface<Collections, Singletons, Pages> = {
   brand?: {
     mark?: BrandMark;
     name: string;
@@ -76,8 +93,10 @@ type UserInterface<Collections, Singletons> = {
   navigation?: Navigation<
     | (keyof Collections & string)
     | (keyof Singletons & string)
+    | (keyof Pages & string)
     | typeof NAVIGATION_DIVIDER_KEY
   >;
+  pages?: Pages;
 };
 
 type Navigation<K> = K[] | { [section: string]: K[] };
@@ -101,11 +120,12 @@ export type GitHubConfig<
   } = {
     [key: string]: Singleton<Record<string, ComponentSchema>>;
   },
+  Pages extends CustomPageMap<Collections, Singletons, Pages> = {}
 > = {
   storage: GitHubStorageConfig;
   collections?: Collections;
   singletons?: Singletons;
-} & CommonConfig<Collections, Singletons>;
+} & CommonConfig<Collections, Singletons, Pages>;
 
 type LocalStorageConfig = { kind: 'local' };
 
@@ -120,11 +140,12 @@ export type LocalConfig<
   } = {
     [key: string]: Singleton<Record<string, ComponentSchema>>;
   },
+  Pages extends CustomPageMap<Collections, Singletons, Pages> = {}
 > = {
   storage: LocalStorageConfig;
   collections?: Collections;
   singletons?: Singletons;
-} & CommonConfig<Collections, Singletons>;
+} & CommonConfig<Collections, Singletons, Pages>;
 
 type CloudStorageConfig = { kind: 'cloud' } & CommonRemoteStorageConfig;
 
@@ -139,12 +160,13 @@ export type CloudConfig<
   } = {
     [key: string]: Singleton<Record<string, ComponentSchema>>;
   },
+  Pages extends CustomPageMap<Collections, Singletons, Pages> = {}
 > = {
   storage: CloudStorageConfig;
   cloud: { project: string };
   collections?: Collections;
   singletons?: Singletons;
-} & CommonConfig<Collections, Singletons>;
+} & CommonConfig<Collections, Singletons, Pages>;
 
 export type Config<
   Collections extends {
@@ -157,13 +179,14 @@ export type Config<
   } = {
     [key: string]: Singleton<Record<string, ComponentSchema>>;
   },
+  Pages extends CustomPageMap<Collections, Singletons, Pages> = {}
 > = {
   storage: LocalStorageConfig | GitHubStorageConfig | CloudStorageConfig;
   collections?: Collections;
   singletons?: Singletons;
 } & ({} extends Collections ? {} : { collections: Collections }) &
   ({} extends Singletons ? {} : { singletons: Singletons }) &
-  CommonConfig<Collections, Singletons>;
+  CommonConfig<Collections, Singletons, Pages>;
 
 // ============================================================================
 // Functions
@@ -176,7 +199,8 @@ export function config<
   Singletons extends {
     [key: string]: Singleton<Record<string, ComponentSchema>>;
   },
->(config: Config<Collections, Singletons>) {
+  Pages extends CustomPageMap<Collections, Singletons, Pages> = {}
+>(config: Config<Collections, Singletons, Pages>) {
   return config;
 }
 

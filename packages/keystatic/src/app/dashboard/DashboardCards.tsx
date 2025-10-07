@@ -92,7 +92,9 @@ function renderItemOrGroup(itemOrGroup: ItemOrGroup) {
       href={itemOrGroup.href}
       endElement={endElement}
     >
-      {typeof itemOrGroup.entryCount === 'number' ? (
+      {itemOrGroup.description ? (
+        <Text color="neutralSecondary">{itemOrGroup.description}</Text>
+      ) : typeof itemOrGroup.entryCount === 'number' ? (
         <Text color="neutralSecondary">
           {pluralize(itemOrGroup.entryCount, {
             singular: 'entry',

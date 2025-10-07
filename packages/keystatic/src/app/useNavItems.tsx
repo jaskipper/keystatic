@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import { useLocalizedStringFormatter } from '@react-aria/i18n';
 
 import { Config, NAVIGATION_DIVIDER_KEY } from '../config';
@@ -12,6 +13,8 @@ type ItemData = {
   label: string;
   changed: number | boolean;
   entryCount?: number;
+  description?: string;
+  icon?: ReactElement;
   children?: undefined;
   isDivider?: undefined;
 };
@@ -93,6 +96,20 @@ function populateItemData(
     const label = config.singletons[key].label;
 
     return { key, href, label, changed };
+  }
+
+  // custom page
+  if (config.ui?.pages && key in config.ui.pages) {
+    const page = config.ui.pages[key];
+    const href = `${basePath}/page/${encodeURIComponent(key)}`;
+    return {
+      key,
+      href,
+      label: page.label,
+      changed: false,
+      description: page.description,
+      icon: page.icon,
+    };
   }
 
   throw new Error(`Unknown navigation key: "${key}".`);

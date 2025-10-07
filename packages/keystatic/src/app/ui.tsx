@@ -11,7 +11,7 @@ import { Icon } from '@keystar/ui/icon';
 import { fileX2Icon } from '@keystar/ui/icon/icons/fileX2Icon';
 import { githubIcon } from '@keystar/ui/icon/icons/githubIcon';
 import { Flex } from '@keystar/ui/layout';
-import { Text } from '@keystar/ui/typography';
+import { Heading, Text } from '@keystar/ui/typography';
 
 import { CloudConfig, Config, GitHubConfig } from '../config';
 import { CollectionPage } from './CollectionPage';
@@ -20,7 +20,7 @@ import { DashboardPage } from './dashboard';
 import { ItemPage } from './ItemPage';
 import Provider from './provider';
 import { AppShell } from './shell';
-import { PageBody, PageRoot } from './shell/page';
+import { PageBody, PageHeader, PageRoot } from './shell/page';
 import { EmptyState } from './shell/empty-state';
 import { SingletonPage } from './SingletonPage';
 import { CreatedGitHubApp } from './onboarding/created-github-app';
@@ -47,6 +47,9 @@ import { NotFoundBoundary, notFound } from './not-found';
 function parseParamsWithoutBranch(params: string[]) {
   if (params.length === 0) {
     return {};
+  }
+  if (params.length === 2 && params[0] === 'page') {
+    return { page: params[1] };
   }
   if (params.length === 2 && params[0] === 'singleton') {
     return { singleton: params[1] };
@@ -192,6 +195,12 @@ function PageInner({ config }: { config: Config }) {
             config={config as unknown as Config}
             singleton={parsedParams.singleton}
           />
+        ) : parsedParams.page ? (
+          <CustomPage
+            pageKey={parsedParams.page}
+            basePath={basePath}
+            config={config as unknown as Config}
+          />
         ) : (
           <DashboardPage
             config={config as unknown as Config}
@@ -205,6 +214,35 @@ function PageInner({ config }: { config: Config }) {
 
 function AlwaysNotFound(): never {
   notFound();
+}
+
+function CustomPage(props: {
+  pageKey: string;
+  basePath: string;
+  config: Config;
+}) {
+  const pageDef = props.config.ui?.pages?.[props.pageKey];
+  if (!pageDef) {
+    notFound();
+  }
+  const definition = pageDef;
+  return (
+    <PageRoot containerWidth="large">
+      <PageHeader>
+        <Heading elementType="h1" id="page-title" size="small">
+          {definition.label}
+        </Heading>
+        {definition.description && (
+          <Text color="neutralSecondary" UNSAFE_className="mt-1">
+            {definition.description}
+          </Text>
+        )}
+      </PageHeader>
+      <PageBody isScrollable>
+        {definition.render({ basePath: props.basePath, config: props.config })}
+      </PageBody>
+    </PageRoot>
+  );
 }
 
 function AuthWrapper(props: {
