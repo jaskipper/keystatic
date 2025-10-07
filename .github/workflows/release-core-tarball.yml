@@ -37,6 +37,8 @@ jobs:
 
       - name: Build packages (preconstruct)
         run: pnpm -w exec preconstruct build
+        env:
+          DISABLE_REACT_COMPILER: '1'
 
       - name: Pack @keystatic/core
         run: pnpm -F @keystatic/core pack --pack-destination ./dist-packs
