@@ -35,13 +35,18 @@ jobs:
       - name: Setup @keystatic/core (generate artifacts)
         run: pnpm -C packages/keystatic run setup
 
+      - name: Build design system l10n
+        run: pnpm exec tsx design-system/pkg/build-l10n.mts
+
       - name: Build packages (preconstruct)
         run: pnpm -w exec preconstruct build
         env:
           DISABLE_REACT_COMPILER: '1'
 
       - name: Pack @keystatic/core
-        run: pnpm -F @keystatic/core pack --pack-destination ./dist-packs
+        run: |
+          mkdir -p dist-packs
+          pnpm -C packages/keystatic pack --pack-destination ../../dist-packs
 
       - name: Create GitHub Release and upload tarball
         uses: softprops/action-gh-release@v2

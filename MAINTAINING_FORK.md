@@ -37,8 +37,8 @@
   - `pnpm add @keystatic/core@link:/absolute/path/to/keystatic/packages/keystatic`
 - Team consumption without cloning (recommended): publish a tarball and reference its URL
   1. Build and pack:
-     - `pnpm -w build`
-     - `pnpm -F @keystatic/core pack --pack-destination ./dist-packs`
+     - `pnpm -w build:packages`
+     - `pnpm -C packages/keystatic pack --pack-destination ../../dist-packs`
   2. Upload the generated tarball from `dist-packs/` to a GitHub Release on this repo.
   3. In consumer projects, depend on the tarball URL (works with npm/pnpm/yarn):
      ```json

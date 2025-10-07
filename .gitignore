@@ -41,6 +41,7 @@ node_modules/
 
 # Preconstruct build output
 dist
+dist-packs
 
 # Docs
 design-system/docs/generated
