@@ -33,7 +33,7 @@ jobs:
         run: |
           pnpm -C packages/keystatic install --frozen-lockfile --ignore-scripts
           pnpm -C packages/keystatic run setup
-          pnpm exec --package=@preconstruct/cli@2.8.11 preconstruct build @keystatic/core
+          pnpm dlx @preconstruct/cli@2.8.11 preconstruct build @keystatic/core
 
       - name: Pack @keystatic/core
         run: pnpm -F @keystatic/core pack --pack-destination ./dist-packs
