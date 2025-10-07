@@ -106,7 +106,7 @@
   ],
   "scripts": {
     "setup": "ts-gql build && tsx scripts/l10n.ts && tsx scripts/build-prism.ts",
-    "build": "pnpm run setup && next build",
+    "build": "pnpm run setup",
     "dev": "next dev",
     "start": "next start",
     "prepare": "pnpm run build"
@@ -202,6 +202,7 @@
     "eslint": "^8.18.0",
     "fast-glob": "^3.2.12",
     "jest-diff": "^29.0.1",
+    "next": "^15.1.6",
     "outdent": "^0.8.0",
     "prismjs": "^1.29.0",
     "react": "^19.0.0",
