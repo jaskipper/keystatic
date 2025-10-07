@@ -10,6 +10,27 @@
   - Code:
     - packages/keystatic/src/config.tsx
     - packages/keystatic/src/app/CollectionPage.tsx
+- Feature: Custom admin pages rendered inside Keystatic.
+  - Config: declare under `ui.pages` and link via `ui.navigation`.
+    ```ts
+    ui: {
+      navigation: { Directory: ['schools', 'import-schools'] },
+      pages: {
+        'import-schools': {
+          label: 'Import Schools',
+          description: 'Upload directory data without leaving Keystatic.',
+          render: ({ config, basePath }) => <ImportSchools />,
+        },
+      },
+    }
+    ```
+  - Routes: `/keystatic/page/<pageKey>` renders inside the AppShell.
+  - Dashboard: page entries appear as cards (uses optional description/icon metadata).
+  - Code:
+    - packages/keystatic/src/config.tsx
+    - packages/keystatic/src/app/ui.tsx
+    - packages/keystatic/src/app/useNavItems.tsx
+    - packages/keystatic/src/app/dashboard/DashboardCards.tsx
 
 **How Consumers Use This Fork**
 - Local development on your machine (fastest):
@@ -95,3 +116,4 @@ Contributing Upstream
 Troubleshooting
 - Git install fails to load built files: ensure `prepare` ran. Run `pnpm -w build` in this repo and re‑install.
 - Admin list doesn’t reflect default sort: confirm your collection sets `defaultSort` and that the `column` is either `'slug'|'status'` or present in `columns`.
+- Custom page 404s: confirm the page key exists in `ui.pages`; add it to `ui.navigation` so it appears in the sidebar/dashboard.
